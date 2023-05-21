@@ -1,0 +1,41 @@
+<div class="card">
+    <p>@Date</p>
+    <img src="@String.Format("https://openweathermap.org/img/wn/{0}@2x.png", IconUrl)" />
+    <p>@WeatherDescription</p>
+    <p>@Temperature</p>
+</div>
+
+@code {
+    private DateTime? _date;
+
+    [Parameter]
+    public float Temperature { get; set; } = 0;
+
+    [Parameter]
+    public string WeatherDescription { get; set; } = "";
+
+    [Parameter]
+    public string IconUrl { get; set; } = "";
+
+    [Parameter]
+    // public DateTime Date { get; set; } = new DateTime();
+    public string? Date
+    {
+        get => _date?.ToString("ddd d hh:mm");
+        set
+        {
+            if (value == null) _date = null;
+
+            if (DateTime.TryParse(value, out var result))
+            {
+                if (_date == result) return;
+
+                _date = result;
+                ValueChanged.InvokeAsync(Date);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+}

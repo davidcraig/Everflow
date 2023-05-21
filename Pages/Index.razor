@@ -1,9 +1,56 @@
 ﻿@page "/"
+@using Everflow.Data
+@using System.Text.Json
+@inject HttpClient Http
+@inject IConfiguration _config
+@inject OpenWeatherMapService weatherService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<section class='p-4'>
+    <h1>Hows the weather?</h1>
 
-Welcome to your new app.
+    <input disabled @bind="searchCity" />
+    <button disabled type="submit" onclick="() => @WeatherSearch()">Submit</button>
+    <p>@exceptionMessage</p>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    @if (forecasts == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="grid grid-cols-5 gap-2">
+        @foreach (var forecast in forecasts.list)
+        {
+            <WeatherCard
+                Temperature="@forecast.main.temp"
+                WeatherDescription="@forecast.weather[0].description"
+                Date="@forecast.dt_txt"
+                IconUrl="@forecast.weather[0].icon"
+            />
+        }
+        </div>
+    }
+</section>
+
+
+
+
+@code {
+    private OpenWeatherMapRootobject? forecasts;
+    private string? exceptionMessage;
+    private string? searchCity;
+
+    protected async Task<OpenWeatherMapRootobject?> WeatherSearch()
+    {
+        // forecasts = await weatherService.WeatherSearch(searchCity);
+        // return forecasts;
+
+        // This is mocking json response with data I retrieved from the API by hand.
+        var weatherJsonString = "{\"cod\":\"200\",\"message\":0,\"cnt\":5,\"list\":[{\"dt\":1684681200,\"main\":{\"temp\":15.61,\"feels_like\":15,\"temp_min\":13.41,\"temp_max\":15.61,\"pressure\":1024,\"sea_level\":1024,\"grnd_level\":1020,\"humidity\":68,\"temp_kf\":2.2},\"weather\":[{\"id\":803,\"main\":\"Clouds\",\"description\":\"broken clouds\",\"icon\":\"04d\"}],\"clouds\":{\"all\":65},\"wind\":{\"speed\":3.27,\"deg\":87,\"gust\":3.39},\"visibility\":10000,\"pop\":0,\"sys\":{\"pod\":\"d\"},\"dt_txt\":\"2023-05-21 15:00:00\"},{\"dt\":1684692000,\"main\":{\"temp\":14.54,\"feels_like\":13.77,\"temp_min\":12.39,\"temp_max\":14.54,\"pressure\":1024,\"sea_level\":1024,\"grnd_level\":1020,\"humidity\":66,\"temp_kf\":2.15},\"weather\":[{\"id\":803,\"main\":\"Clouds\",\"description\":\"broken clouds\",\"icon\":\"04d\"}],\"clouds\":{\"all\":56},\"wind\":{\"speed\":2.93,\"deg\":83,\"gust\":3.7},\"visibility\":10000,\"pop\":0,\"sys\":{\"pod\":\"d\"},\"dt_txt\":\"2023-05-21 18:00:00\"},{\"dt\":1684702800,\"main\":{\"temp\":11.9,\"feels_like\":11.08,\"temp_min\":10.04,\"temp_max\":11.9,\"pressure\":1025,\"sea_level\":1025,\"grnd_level\":1021,\"humidity\":74,\"temp_kf\":1.86},\"weather\":[{\"id\":802,\"main\":\"Clouds\",\"description\":\"scattered clouds\",\"icon\":\"03n\"}],\"clouds\":{\"all\":26},\"wind\":{\"speed\":1.02,\"deg\":51,\"gust\":1.14},\"visibility\":10000,\"pop\":0,\"sys\":{\"pod\":\"n\"},\"dt_txt\":\"2023-05-21 21:00:00\"},{\"dt\":1684713600,\"main\":{\"temp\":9.23,\"feels_like\":8.94,\"temp_min\":9.23,\"temp_max\":9.23,\"pressure\":1025,\"sea_level\":1025,\"grnd_level\":1020,\"humidity\":77,\"temp_kf\":0},\"weather\":[{\"id\":801,\"main\":\"Clouds\",\"description\":\"few clouds\",\"icon\":\"02n\"}],\"clouds\":{\"all\":11},\"wind\":{\"speed\":1.35,\"deg\":340,\"gust\":1.41},\"visibility\":10000,\"pop\":0,\"sys\":{\"pod\":\"n\"},\"dt_txt\":\"2023-05-22 00:00:00\"},{\"dt\":1684724400,\"main\":{\"temp\":8.23,\"feels_like\":6.73,\"temp_min\":8.23,\"temp_max\":8.23,\"pressure\":1024,\"sea_level\":1024,\"grnd_level\":1019,\"humidity\":76,\"temp_kf\":0},\"weather\":[{\"id\":801,\"main\":\"Clouds\",\"description\":\"few clouds\",\"icon\":\"02n\"}],\"clouds\":{\"all\":16},\"wind\":{\"speed\":2.49,\"deg\":314,\"gust\":2.68},\"visibility\":10000,\"pop\":0,\"sys\":{\"pod\":\"n\"},\"dt_txt\":\"2023-05-22 03:00:00\"}],\"city\":{\"id\":2636531,\"name\":\"Sunderland\",\"coord\":{\"lat\":54.9059,\"lon\":-1.3829},\"country\":\"GB\",\"population\":177965,\"timezone\":3600,\"sunrise\":1684640954,\"sunset\":1684700115}}";
+        var json = JsonDocument.Parse(weatherJsonString);
+        forecasts = JsonSerializer.Deserialize<OpenWeatherMapRootobject>(json);
+        return forecasts;
+    }
+}

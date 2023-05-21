@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Components;
+
 namespace Everflow.Data
 {
     public class WeatherForecast
     {
-        public DateOnly Date { get; set; }
+        public decimal Temperature { get; set; } = 0;
 
-        public int TemperatureC { get; set; }
+        public string WeatherDescription { get; set; } = "";
 
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public string IconUrl { get; set; } = "";
 
-        public string? Summary { get; set; }
+        public DateTime Date { get; set; } = new DateTime();
     }
 }

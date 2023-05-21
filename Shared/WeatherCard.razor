@@ -1,8 +1,21 @@
-<div class="card">
-    <p>@Date</p>
+﻿<div class="card">
+    <p class="date">@Date</p>
     <img src="@String.Format("https://openweathermap.org/img/wn/{0}@2x.png", IconUrl)" />
-    <p>@WeatherDescription</p>
-    <p>@Temperature</p>
+    <p class="description">@WeatherDescription</p>
+    <p class="temp">@Temperature°c
+        @if(Temperature >= 30)
+        {
+            <span>🥵</span>
+        }
+        @if (Temperature < 30 && Temperature > 14)
+        {
+            <span>🙂</span>
+        }
+        @if (Temperature <= 14)
+        {
+            <span>🥶</span>
+        }
+    </p>
 </div>
 
 @code {
